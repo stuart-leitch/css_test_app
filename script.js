@@ -1,6 +1,20 @@
 // UI logic for CSS Test Calculator
 // Core functions (parseTimeInput, formatTime, calculateCSS) are in css-calculator.js
 
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        btn.classList.add('active');
+        const tabId = 'tab-' + btn.dataset.tab;
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+
 // Try to auto-calculate CSS if both inputs are valid
 function tryAutoCalculateCSS() {
     const time200Input = document.getElementById('time200').value;
@@ -124,4 +138,131 @@ document.getElementById('time200').addEventListener('blur', () => {
 document.getElementById('time400').addEventListener('blur', () => {
     updatePace('time400', 'pace400Box', 400);
     tryAutoCalculateCSS();
+});
+
+// ========== TIMER TAB LOGIC ==========
+
+let timer200StartTime = null;
+let timer400StartTime = null;
+let timer200Interval = null;
+let timer400Interval = null;
+let timer200Result = null;
+let timer400Result = null;
+
+// Format milliseconds to M:SS.s display
+function formatTimerDisplay(ms) {
+    const totalSeconds = ms / 1000;
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = Math.floor(totalSeconds % 60);
+    const tenths = Math.floor((totalSeconds * 10) % 10);
+    return `${mins}:${secs.toString().padStart(2, '0')}.${tenths}`;
+}
+
+// Update timer display
+function updateTimerDisplay(displayId, startTime) {
+    const elapsed = Date.now() - startTime;
+    document.getElementById(displayId).textContent = formatTimerDisplay(elapsed);
+}
+
+// Show timer result breakdown
+function showTimerResult(resultBoxId, seconds, distance) {
+    const pace = seconds / (distance / 100);
+    const distanceNum = distance === 200 ? '200' : '400';
+    
+    document.getElementById('timerSeconds' + distanceNum).textContent = seconds.toFixed(1);
+    document.getElementById('timerMinSec' + distanceNum).textContent = formatTime(Math.round(seconds));
+    document.getElementById('timerPace' + distanceNum).textContent = formatTime(Math.round(pace));
+    document.getElementById(resultBoxId).classList.remove('hidden');
+}
+
+// Calculate and show timer CSS result
+function calculateTimerCSS() {
+    if (timer200Result === null || timer400Result === null) return;
+    
+    try {
+        const results = calculateCSS(Math.round(timer200Result), Math.round(timer400Result));
+        document.getElementById('timerCssResult').textContent = formatTime(results.css) + '/100';
+        document.getElementById('timerResultsSection').classList.remove('hidden');
+        document.getElementById('timerErrorMessage').classList.add('hidden');
+    } catch (error) {
+        document.getElementById('timerErrorMessage').textContent = error.message;
+        document.getElementById('timerErrorMessage').classList.remove('hidden');
+        document.getElementById('timerResultsSection').classList.add('hidden');
+    }
+}
+
+// 200m Timer: Start
+document.getElementById('start200Btn').addEventListener('click', () => {
+    timer200StartTime = Date.now();
+    timer200Interval = setInterval(() => {
+        updateTimerDisplay('timer200Display', timer200StartTime);
+    }, 100);
+    
+    document.getElementById('start200Btn').classList.add('hidden');
+    document.getElementById('stop200Btn').classList.remove('hidden');
+});
+
+// 200m Timer: Stop
+document.getElementById('stop200Btn').addEventListener('click', () => {
+    clearInterval(timer200Interval);
+    timer200Result = (Date.now() - timer200StartTime) / 1000;
+    
+    document.getElementById('stop200Btn').classList.add('hidden');
+    showTimerResult('timer200Result', timer200Result, 200);
+    
+    // Show 400m trial
+    document.getElementById('timer400Trial').classList.remove('hidden');
+});
+
+// 400m Timer: Start
+document.getElementById('start400Btn').addEventListener('click', () => {
+    timer400StartTime = Date.now();
+    timer400Interval = setInterval(() => {
+        updateTimerDisplay('timer400Display', timer400StartTime);
+    }, 100);
+    
+    document.getElementById('start400Btn').classList.add('hidden');
+    document.getElementById('stop400Btn').classList.remove('hidden');
+});
+
+// 400m Timer: Stop
+document.getElementById('stop400Btn').addEventListener('click', () => {
+    clearInterval(timer400Interval);
+    timer400Result = (Date.now() - timer400StartTime) / 1000;
+    
+    document.getElementById('stop400Btn').classList.add('hidden');
+    showTimerResult('timer400Result', timer400Result, 400);
+    
+    // Calculate and show CSS result
+    calculateTimerCSS();
+});
+
+// Timer Reset
+document.getElementById('timerResetBtn').addEventListener('click', () => {
+    // Clear intervals
+    clearInterval(timer200Interval);
+    clearInterval(timer400Interval);
+    
+    // Reset state
+    timer200StartTime = null;
+    timer400StartTime = null;
+    timer200Result = null;
+    timer400Result = null;
+    
+    // Reset 200m trial
+    document.getElementById('timer200Display').textContent = '0:00.0';
+    document.getElementById('start200Btn').classList.remove('hidden');
+    document.getElementById('stop200Btn').classList.add('hidden');
+    document.getElementById('timer200Result').classList.add('hidden');
+    
+    // Reset 400m trial
+    document.getElementById('timer400Display').textContent = '0:00.0';
+    document.getElementById('start400Btn').classList.remove('hidden');
+    document.getElementById('stop400Btn').classList.add('hidden');
+    document.getElementById('timer400Result').classList.add('hidden');
+    document.getElementById('timer400Trial').classList.add('hidden');
+    
+    // Hide results
+    document.getElementById('timerResultsSection').classList.add('hidden');
+    document.getElementById('timerErrorMessage').classList.add('hidden');
 });

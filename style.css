@@ -42,6 +42,43 @@ header h1 {
     font-weight: 400;
 }
 
+.tabs {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+    color: #667eea;
+}
+
+.tab-btn.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
 main {
     padding: 32px 24px;
 }
@@ -200,6 +237,66 @@ input[type="text"]:focus {
 
 .error-message.hidden {
     display: none;
+}
+
+/* Timer styles */
+.timer-trial {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.timer-trial.hidden {
+    display: none;
+}
+
+.timer-trial-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.timer-display {
+    font-size: 48px;
+    font-weight: 700;
+    font-family: 'Monaco', 'Menlo', monospace;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+.timer-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.timer-btn {
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.timer-btn:active {
+    transform: scale(0.98);
+}
+
+.timer-btn.hidden {
+    display: none;
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.stop-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+    color: white;
 }
 
 @keyframes fadeIn {
