@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Test Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CSS Test Calculator</h1>
+            <p class="subtitle">Critical Speed Swimming</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="time200">200m Time</label>
+                    <input 
+                        type="text" 
+                        id="time200" 
+                        placeholder="e.g., 2:35 or 155"
+                        inputmode="numeric"
+                    >
+                    <small class="help-text">Enter as MM:SS or seconds</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="time400">400m Time</label>
+                    <input 
+                        type="text" 
+                        id="time400" 
+                        placeholder="e.g., 5:25 or 325"
+                        inputmode="numeric"
+                    >
+                    <small class="help-text">Enter as MM:SS or seconds</small>
+                </div>
+
+                <button id="calculateBtn" class="calculate-btn">Calculate CSS</button>
+            </div>
+
+            <div id="resultsSection" class="results-section hidden">
+                <div class="result-card">
+                    <h2>Critical Speed</h2>
+                    <div class="result-value" id="cssResult">-</div>
+                    <p class="result-label">per 100m</p>
+                </div>
+
+                <div class="breakdown">
+                    <h3>Trial Paces</h3>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">200m Pace:</span>
+                        <span class="breakdown-value" id="pace200">-</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">400m Pace:</span>
+                        <span class="breakdown-value" id="pace400">-</span>
+                    </div>
+                </div>
+
+                <button id="resetBtn" class="reset-btn">Calculate Again</button>
+            </div>
+
+            <div id="errorMessage" class="error-message hidden"></div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
