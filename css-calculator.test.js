@@ -23,6 +23,20 @@ describe('parseTimeInput', () => {
         });
     });
 
+    describe('MM:SS.s format (decimal seconds)', () => {
+        test('parses 1:46.5 as 106.5 seconds', () => {
+            expect(parseTimeInput('1:46.5')).toBe(106.5);
+        });
+
+        test('parses 3:28.25 as 208.25 seconds', () => {
+            expect(parseTimeInput('3:28.25')).toBe(208.25);
+        });
+
+        test('parses 0:45.1 as 45.1 seconds', () => {
+            expect(parseTimeInput('0:45.1')).toBe(45.1);
+        });
+    });
+
     describe('seconds format', () => {
         test('parses 106 as 106 seconds', () => {
             expect(parseTimeInput('106')).toBe(106);
@@ -34,6 +48,10 @@ describe('parseTimeInput', () => {
 
         test('parses 500 as 500 seconds', () => {
             expect(parseTimeInput('500')).toBe(500);
+        });
+
+        test('parses 208.5 as 208.5 seconds', () => {
+            expect(parseTimeInput('208.5')).toBe(208.5);
         });
 
         test('handles leading/trailing whitespace', () => {
@@ -87,6 +105,24 @@ describe('formatTime', () => {
 
     test('returns - for NaN', () => {
         expect(formatTime(NaN)).toBe('-');
+    });
+
+    describe('with includeDecimals option', () => {
+        test('formats 106.5 seconds as 1:46.5 when includeDecimals=true', () => {
+            expect(formatTime(106.5, true)).toBe('1:46.5');
+        });
+
+        test('formats 130.25 seconds as 2:10.3 when includeDecimals=true', () => {
+            expect(formatTime(130.25, true)).toBe('2:10.3');
+        });
+
+        test('formats whole seconds without decimal when includeDecimals=true', () => {
+            expect(formatTime(106, true)).toBe('1:46');
+        });
+
+        test('rounds decimal to 1 place when includeDecimals=true', () => {
+            expect(formatTime(106.789, true)).toBe('1:46.8');
+        });
     });
 });
 

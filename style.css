@@ -89,6 +89,11 @@ main {
 
 .input-group {
     flex: 1;
+    text-align: center;
+}
+
+.input-group input {
+    text-align: center;
 }
 
 label {

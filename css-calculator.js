@@ -4,12 +4,12 @@
 function parseTimeInput(input) {
     const trimmed = input.trim();
     
-    // Check if it's MM:SS format
+    // Check if it's MM:SS or MM:SS.s format
     if (trimmed.includes(':')) {
         const parts = trimmed.split(':');
         if (parts.length === 2) {
             const minutes = parseInt(parts[0], 10);
-            const seconds = parseInt(parts[1], 10);
+            const seconds = parseFloat(parts[1]);
             
             if (!isNaN(minutes) && !isNaN(seconds) && seconds >= 0 && seconds < 60 && minutes >= 0) {
                 return minutes * 60 + seconds;
@@ -19,8 +19,8 @@ function parseTimeInput(input) {
         return null;
     }
     
-    // Try as total seconds
-    const seconds = parseInt(trimmed, 10);
+    // Try as total seconds (including decimals)
+    const seconds = parseFloat(trimmed);
     if (!isNaN(seconds) && seconds > 0) {
         return seconds;
     }
@@ -28,16 +28,24 @@ function parseTimeInput(input) {
     return null;
 }
 
-// Convert seconds to MM:SS format
-function formatTime(seconds) {
+// Convert seconds to MM:SS or MM:SS.s format
+function formatTime(seconds, includeDecimals = false) {
     if (seconds === null || isNaN(seconds)) {
         return '-';
     }
     
     const mins = Math.floor(seconds / 60);
-    const secs = Math.round(seconds % 60);
+    const secsRemainder = seconds % 60;
     
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    if (includeDecimals && secsRemainder % 1 !== 0) {
+        // Show one decimal place if there are fractional seconds
+        const secs = Math.floor(secsRemainder);
+        const tenths = Math.round((secsRemainder % 1) * 10);
+        return `${mins}:${secs.toString().padStart(2, '0')}.${tenths}`;
+    } else {
+        const secs = Math.round(secsRemainder);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
 }
 
 // Calculate CSS and paces

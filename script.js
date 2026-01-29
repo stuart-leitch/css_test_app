@@ -66,9 +66,11 @@ function updatePace(inputId, paceBoxId, distance) {
     
     const pace = time / (distance / 100);
     
-    secondsEl.textContent = time;
-    minSecEl.textContent = formatTime(time);
-    paceEl.textContent = formatTime(pace);
+    // Show decimals if present
+    const hasDecimals = time % 1 !== 0;
+    secondsEl.textContent = hasDecimals ? time.toFixed(1) : time;
+    minSecEl.textContent = formatTime(time, true);
+    paceEl.textContent = formatTime(pace, true);
     paceBox.classList.remove('hidden');
 }
 
@@ -78,7 +80,7 @@ function displayResults(css, pace200, pace400) {
     const cssResult = document.getElementById('cssResult');
     const errorMessage = document.getElementById('errorMessage');
     
-    cssResult.textContent = formatTime(css) + '/100';
+    cssResult.textContent = formatTime(css);
     
     resultsSection.classList.remove('hidden');
     errorMessage.classList.add('hidden');
@@ -170,8 +172,8 @@ function showTimerResult(resultBoxId, seconds, distance) {
     const distanceNum = distance === 200 ? '200' : '400';
     
     document.getElementById('timerSeconds' + distanceNum).textContent = seconds.toFixed(1);
-    document.getElementById('timerMinSec' + distanceNum).textContent = formatTime(Math.round(seconds));
-    document.getElementById('timerPace' + distanceNum).textContent = formatTime(Math.round(pace));
+    document.getElementById('timerMinSec' + distanceNum).textContent = formatTime(seconds, true);
+    document.getElementById('timerPace' + distanceNum).textContent = formatTime(pace, true);
     document.getElementById(resultBoxId).classList.remove('hidden');
 }
 
@@ -181,7 +183,7 @@ function calculateTimerCSS() {
     
     try {
         const results = calculateCSS(Math.round(timer200Result), Math.round(timer400Result));
-        document.getElementById('timerCssResult').textContent = formatTime(results.css) + '/100';
+        document.getElementById('timerCssResult').textContent = formatTime(results.css, true);
         document.getElementById('timerResultsSection').classList.remove('hidden');
         document.getElementById('timerErrorMessage').classList.add('hidden');
     } catch (error) {
