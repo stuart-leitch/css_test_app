@@ -47,15 +47,20 @@ function calculateCSS(time200, time400) {
         throw new Error('400m time must be greater than 200m time');
     }
     
-    // Calculate CSS (seconds per 100m)
-    // CSS = (time_400m - time_200m) / 2
-    const cssSeconds = (time400 - time200) / 2;
-    
     // Calculate paces per 100m
     // 200m pace per 100m = time_200m / 2
     // 400m pace per 100m = time_400m / 4
     const pace200Seconds = time200 / 2;
     const pace400Seconds = time400 / 4;
+    
+    // Validate that 400m pace is slower than 200m pace
+    if (pace400Seconds < pace200Seconds) {
+        throw new Error('400m pace cannot be faster than 200m pace');
+    }
+    
+    // Calculate CSS (seconds per 100m)
+    // CSS = (time_400m - time_200m) / 2
+    const cssSeconds = (time400 - time200) / 2;
     
     return {
         css: cssSeconds,
@@ -70,6 +75,7 @@ function tryAutoCalculateCSS() {
     const time400Input = document.getElementById('time400').value;
     
     if (!time200Input || !time400Input) {
+        document.getElementById('errorMessage').classList.add('hidden');
         return;
     }
     
@@ -77,15 +83,17 @@ function tryAutoCalculateCSS() {
     const time400 = parseTimeInput(time400Input);
     
     if (time200 === null || time400 === null) {
+        document.getElementById('errorMessage').classList.add('hidden');
         return;
     }
     
     try {
         const results = calculateCSS(time200, time400);
         displayResults(results.css, results.pace200, results.pace400);
+        document.getElementById('errorMessage').classList.add('hidden');
     } catch (error) {
-        // Don't show error during auto-calc, just don't display results
         document.getElementById('resultsSection').classList.add('hidden');
+        showError(error.message);
     }
 }
 
