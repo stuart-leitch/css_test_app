@@ -1,0 +1,12 @@
+{
+  "name": "css-test-app",
+  "version": "1.0.0",
+  "description": "Critical Swim Speed Test Calculator",
+  "main": "script.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
