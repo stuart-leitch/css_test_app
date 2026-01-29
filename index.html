@@ -15,51 +15,51 @@
 
         <main>
             <div class="input-section">
-                <div class="input-group">
-                    <label for="time200">200m Time</label>
-                    <input 
-                        type="text" 
-                        id="time200" 
-                        placeholder="e.g., 2:35 or 155"
-                        inputmode="numeric"
-                    >
-                    <small class="help-text">Enter as MM:SS or seconds</small>
+                <div class="trial-block">
+                    <div class="input-group">
+                        <label for="time200">200m Time</label>
+                        <input 
+                            type="text" 
+                            id="time200" 
+                            placeholder="e.g., 3:28 or 208"
+                            inputmode="numeric"
+                        >
+                        <small class="help-text">Enter as MM:SS or seconds</small>
+                    </div>
+                    <div class="pace-output hidden" id="pace200Box">
+                        <div class="pace-detail"><span id="seconds200">-</span> sec</div>
+                        <div class="pace-detail"><span id="minSec200">-</span></div>
+                        <div class="pace-detail"><span id="pace200">-</span>/100</div>
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="time400">400m Time</label>
-                    <input 
-                        type="text" 
-                        id="time400" 
-                        placeholder="e.g., 5:25 or 325"
-                        inputmode="numeric"
-                    >
-                    <small class="help-text">Enter as MM:SS or seconds</small>
+                <div class="trial-block">
+                    <div class="input-group">
+                        <label for="time400">400m Time</label>
+                        <input 
+                            type="text" 
+                            id="time400" 
+                            placeholder="e.g., 7:20 or 440"
+                            inputmode="numeric"
+                        >
+                        <small class="help-text">Enter as MM:SS or seconds</small>
+                    </div>
+                    <div class="pace-output hidden" id="pace400Box">
+                        <div class="pace-detail"><span id="seconds400">-</span> sec</div>
+                        <div class="pace-detail"><span id="minSec400">-</span></div>
+                        <div class="pace-detail"><span id="pace400">-</span>/100</div>
+                    </div>
                 </div>
-
-                <button id="calculateBtn" class="calculate-btn">Calculate CSS</button>
             </div>
 
             <div id="resultsSection" class="results-section hidden">
                 <div class="result-card">
-                    <h2>Critical Speed</h2>
+                    <h2>Critical Swim Speed (CSS)</h2>
                     <div class="result-value" id="cssResult">-</div>
                     <p class="result-label">per 100m</p>
                 </div>
 
-                <div class="breakdown">
-                    <h3>Trial Paces</h3>
-                    <div class="breakdown-item">
-                        <span class="breakdown-label">200m Pace:</span>
-                        <span class="breakdown-value" id="pace200">-</span>
-                    </div>
-                    <div class="breakdown-item">
-                        <span class="breakdown-label">400m Pace:</span>
-                        <span class="breakdown-value" id="pace400">-</span>
-                    </div>
-                </div>
-
-                <button id="resetBtn" class="reset-btn">Calculate Again</button>
+                <button id="resetBtn" class="reset-btn">Start Again</button>
             </div>
 
             <div id="errorMessage" class="error-message hidden"></div>
