@@ -28,8 +28,8 @@ Manual entry of trial times to calculate CSS.
 #### Inputs
 | Field | Format | Examples |
 |-------|--------|----------|
-| 200m Time | MM:SS, MM:SS.s, or total seconds | `3:28`, `3:28.5`, or `208.5` |
-| 400m Time | MM:SS, MM:SS.s, or total seconds | `7:20`, `7:20.25`, or `440.25` |
+| 200m Time | MM:SS, MM.SS, MM SS, or total seconds | `3:28`, `3.28`, `3 28`, or `208` |
+| 400m Time | MM:SS, MM.SS, MM SS, or total seconds | `7:20`, `7.20`, `7 20`, or `440` |
 
 #### Behaviour
 - Times can be entered flexibly (MM:SS format or plain seconds)

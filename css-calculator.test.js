@@ -1,6 +1,6 @@
 const { parseTimeInput, formatTime, calculateCSS } = require('./css-calculator');
 
-describe('parseTimeInput', () => {
+describe('parseTimeInput - valid inputs', () => {
     describe('MM:SS format', () => {
         test('parses 1:46 as 106 seconds', () => {
             expect(parseTimeInput('1:46')).toBe(106);
@@ -16,6 +16,10 @@ describe('parseTimeInput', () => {
 
         test('parses 0:45 as 45 seconds', () => {
             expect(parseTimeInput('0:45')).toBe(45);
+        });
+
+        test('parses 10:00 as 600 seconds', () => {
+            expect(parseTimeInput('10:00')).toBe(600);
         });
 
         test('handles leading/trailing whitespace', () => {
@@ -35,23 +39,83 @@ describe('parseTimeInput', () => {
         test('parses 0:45.1 as 45.1 seconds', () => {
             expect(parseTimeInput('0:45.1')).toBe(45.1);
         });
+
+        test('parses 3:28.9 as 208.9 seconds', () => {
+            expect(parseTimeInput('3:28.9')).toBe(208.9);
+        });
+
+        test('parses 7:20.05 as 440.05 seconds', () => {
+            expect(parseTimeInput('7:20.05')).toBe(440.05);
+        });
     });
 
-    describe('seconds format', () => {
+    describe('MM.SS format (period separator)', () => {
+        test('parses 3.28 as 208 seconds', () => {
+            expect(parseTimeInput('3.28')).toBe(208);
+        });
+
+        test('parses 7.20 as 440 seconds', () => {
+            expect(parseTimeInput('7.20')).toBe(440);
+        });
+
+        test('parses 1.05 as 65 seconds', () => {
+            expect(parseTimeInput('1.05')).toBe(65);
+        });
+
+        test('parses 0.30 as 30 seconds', () => {
+            expect(parseTimeInput('0.30')).toBe(30);
+        });
+
+        test('parses 10.00 as 600 seconds', () => {
+            expect(parseTimeInput('10.00')).toBe(600);
+        });
+    });
+
+    describe('MM SS format (space separator)', () => {
+        test('parses 3 28 as 208 seconds', () => {
+            expect(parseTimeInput('3 28')).toBe(208);
+        });
+
+        test('parses 7 20 as 440 seconds', () => {
+            expect(parseTimeInput('7 20')).toBe(440);
+        });
+
+        test('parses 1 05 as 65 seconds', () => {
+            expect(parseTimeInput('1 05')).toBe(65);
+        });
+
+        test('parses 0 45 as 45 seconds', () => {
+            expect(parseTimeInput('0 45')).toBe(45);
+        });
+
+        test('handles multiple spaces', () => {
+            expect(parseTimeInput('3  28')).toBe(208);
+        });
+
+        test('parses decimal seconds with space separator', () => {
+            expect(parseTimeInput('3 28.5')).toBe(208.5);
+        });
+    });
+
+    describe('seconds format (integer)', () => {
         test('parses 106 as 106 seconds', () => {
             expect(parseTimeInput('106')).toBe(106);
+        });
+
+        test('parses 208 as 208 seconds', () => {
+            expect(parseTimeInput('208')).toBe(208);
         });
 
         test('parses 240 as 240 seconds', () => {
             expect(parseTimeInput('240')).toBe(240);
         });
 
-        test('parses 500 as 500 seconds', () => {
-            expect(parseTimeInput('500')).toBe(500);
+        test('parses 440 as 440 seconds', () => {
+            expect(parseTimeInput('440')).toBe(440);
         });
 
-        test('parses 208.5 as 208.5 seconds', () => {
-            expect(parseTimeInput('208.5')).toBe(208.5);
+        test('parses 500 as 500 seconds', () => {
+            expect(parseTimeInput('500')).toBe(500);
         });
 
         test('handles leading/trailing whitespace', () => {
@@ -59,7 +123,31 @@ describe('parseTimeInput', () => {
         });
     });
 
-    describe('invalid inputs', () => {
+    describe('seconds format (decimal)', () => {
+        test('parses 208.5 as 208.5 seconds', () => {
+            expect(parseTimeInput('208.5')).toBe(208.5);
+        });
+
+        test('parses 440.25 as 440.25 seconds', () => {
+            expect(parseTimeInput('440.25')).toBe(440.25);
+        });
+
+        test('parses 106.9 as 106.9 seconds', () => {
+            expect(parseTimeInput('106.9')).toBe(106.9);
+        });
+
+        test('parses 500.1 as 500.1 seconds', () => {
+            expect(parseTimeInput('500.1')).toBe(500.1);
+        });
+
+        test('handles leading/trailing whitespace', () => {
+            expect(parseTimeInput('  208  ')).toBe(208);
+        });
+    });
+});
+
+describe('parseTimeInput - invalid inputs', () => {
+    describe('empty and non-numeric', () => {
         test('returns null for empty string', () => {
             expect(parseTimeInput('')).toBe(null);
         });
@@ -75,9 +163,22 @@ describe('parseTimeInput', () => {
         test('returns null for negative numbers', () => {
             expect(parseTimeInput('-100')).toBe(null);
         });
+    });
 
-        test('returns null for invalid MM:SS (seconds >= 60)', () => {
+    describe('invalid seconds (>= 60)', () => {
+        test('rejects MM:SS with seconds >= 60', () => {
+            expect(parseTimeInput('1:60')).toBe(null);
             expect(parseTimeInput('1:65')).toBe(null);
+        });
+
+        test('rejects MM.SS with seconds >= 60', () => {
+            expect(parseTimeInput('1.60')).toBe(null);
+            expect(parseTimeInput('1.75')).toBe(null);
+        });
+
+        test('rejects MM SS with seconds >= 60', () => {
+            expect(parseTimeInput('1 60')).toBe(null);
+            expect(parseTimeInput('1 65')).toBe(null);
         });
     });
 });
@@ -163,11 +264,27 @@ describe('calculateCSS', () => {
         });
 
         test('throws error if 400m time is less than 200m time', () => {
-            expect(() => calculateCSS(300, 200)).toThrow('400m time must be greater than 200m time');
+            expect(() => calculateCSS(300, 250)).toThrow('400m time must be greater than 200m time');
         });
 
         test('throws error if 400m time equals 200m time', () => {
             expect(() => calculateCSS(240, 240)).toThrow('400m time must be greater than 200m time');
+        });
+
+        test('throws error if 200m time is less than 100 seconds', () => {
+            expect(() => calculateCSS(99, 440)).toThrow('200m time must be at least 100 seconds');
+        });
+
+        test('throws error if 400m time is less than 210 seconds', () => {
+            expect(() => calculateCSS(120, 209)).toThrow('400m time must be at least 210 seconds');
+        });
+
+        test('throws error if 200m time is more than 6 minutes', () => {
+            expect(() => calculateCSS(361, 500)).toThrow('200m time must be less than 6 minutes');
+        });
+
+        test('throws error if 400m time is more than 12 minutes', () => {
+            expect(() => calculateCSS(200, 721)).toThrow('400m time must be less than 12 minutes');
         });
 
         test('throws error if 400m pace is faster than 200m pace', () => {

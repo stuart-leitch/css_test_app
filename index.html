@@ -27,12 +27,13 @@
                         <input 
                             type="text" 
                             id="time200" 
-                            placeholder="e.g., 3:28.5 or 208"
+                            placeholder="e.g., 3:28 or 208.5"
                             inputmode="numeric"
                         >
-                        <small class="help-text">Enter as MM:SS.s or seconds</small>
+                        <small class="help-text">MM:SS(.s) or SSS(.s)</small>
+                        <small class="input-error hidden" id="error200" style="color: #cc3333;"></small>
                     </div>
-                    <div class="pace-output hidden" id="pace200Box">
+                    <div class="pace-output hidden" id="pace200Box">>
                         <div class="pace-detail"><span id="seconds200">-</span> sec</div>
                         <div class="pace-detail"><span id="minSec200">-</span></div>
                         <div class="pace-detail"><span id="pace200">-</span>/100</div>
@@ -45,12 +46,13 @@
                         <input 
                             type="text" 
                             id="time400" 
-                            placeholder="e.g., 7:20.5 or 440"
+                            placeholder="e.g., 7:20 or 440.5"
                             inputmode="numeric"
                         >
-                        <small class="help-text">Enter as MM:SS.s or seconds</small>
+                        <small class="help-text">MM:SS(.s) or SSS(.s)</small>
+                        <small class="input-error hidden" id="error400" style="color: #cc3333;"></small>
                     </div>
-                    <div class="pace-output hidden" id="pace400Box">
+                    <div class="pace-output hidden" id="pace400Box">>>
                         <div class="pace-detail"><span id="seconds400">-</span> sec</div>
                         <div class="pace-detail"><span id="minSec400">-</span></div>
                         <div class="pace-detail"><span id="pace400">-</span>/100</div>
@@ -118,6 +120,7 @@
         </main>
     </div>
 
+    <script src="css-constants.js"></script>
     <script src="css-calculator.js"></script>
     <script src="script.js"></script>
 </body>

@@ -1,1 +1,8 @@
 node_modules/
+
+# iOS
+iOS/.DS_Store
+iOS/build/
+iOS/*.xcodeproj/xcuserdata/
+iOS/*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcuserstate

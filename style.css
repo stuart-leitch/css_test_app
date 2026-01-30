@@ -244,6 +244,18 @@ input[type="text"]:focus {
     display: none;
 }
 
+.input-error {
+    display: block;
+    color: #c33 !important;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.input-error.hidden {
+    display: none;
+}
+
 /* Timer styles */
 .timer-trial {
     margin-bottom: 24px;

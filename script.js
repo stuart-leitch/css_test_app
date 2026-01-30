@@ -1,6 +1,26 @@
 // UI logic for CSS Test Calculator
 // Core functions (parseTimeInput, formatTime, calculateCSS) are in css-calculator.js
 
+// Filter input to only allow digits, colon, period, and space
+function filterTimeInput(input) {
+    return input.replace(/[^0-9:.\s]/g, '');
+}
+
+// Add input filtering to time inputs
+document.getElementById('time200').addEventListener('input', function(e) {
+    const filtered = filterTimeInput(e.target.value);
+    if (filtered !== e.target.value) {
+        e.target.value = filtered;
+    }
+});
+
+document.getElementById('time400').addEventListener('input', function(e) {
+    const filtered = filterTimeInput(e.target.value);
+    if (filtered !== e.target.value) {
+        e.target.value = filtered;
+    }
+});
+
 // Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -22,6 +42,16 @@ function tryAutoCalculateCSS() {
     
     if (!time200Input || !time400Input) {
         document.getElementById('errorMessage').classList.add('hidden');
+        document.getElementById('resultsSection').classList.add('hidden');
+        return;
+    }
+    
+    // Check for inline validation errors first
+    const error200 = validateTimeInput(time200Input, 200);
+    const error400 = validateTimeInput(time400Input, 400);
+    if (error200 || error400) {
+        document.getElementById('errorMessage').classList.add('hidden');
+        document.getElementById('resultsSection').classList.add('hidden');
         return;
     }
     
@@ -30,6 +60,7 @@ function tryAutoCalculateCSS() {
     
     if (time200 === null || time400 === null) {
         document.getElementById('errorMessage').classList.add('hidden');
+        document.getElementById('resultsSection').classList.add('hidden');
         return;
     }
     
@@ -43,17 +74,98 @@ function tryAutoCalculateCSS() {
     }
 }
 
+// Validate input and return error message if invalid
+function validateTimeInput(input, distance) {
+    if (!input || !input.trim()) {
+        return null; // Empty is not an error, just no input
+    }
+    
+    const trimmed = input.trim();
+    
+    // Check for invalid MM:SS format (seconds >= 60)
+    if (trimmed.includes(':')) {
+        const parts = trimmed.split(':');
+        if (parts.length === 2) {
+            const seconds = parseFloat(parts[1]);
+            if (!isNaN(seconds) && seconds >= 60) {
+                return 'Seconds must be less than 60';
+            }
+        }
+    }
+    
+    // Check for invalid MM.SS format (seconds >= 60, only for minutes <= 12)
+    const periodMatch = trimmed.match(/^(\d+)\.(\d{2})$/);
+    if (periodMatch) {
+        const minutes = parseInt(periodMatch[1], 10);
+        const seconds = parseInt(periodMatch[2], 10);
+        if (minutes <= 12 && seconds >= 60) {
+            return 'Seconds must be less than 60';
+        }
+    }
+    
+    // Check for invalid space format (seconds >= 60)
+    if (trimmed.includes(' ')) {
+        const parts = trimmed.split(/\s+/);
+        if (parts.length === 2) {
+            const seconds = parseFloat(parts[1]);
+            if (!isNaN(seconds) && seconds >= 60) {
+                return 'Seconds must be less than 60';
+            }
+        }
+    }
+    
+    // If parseTimeInput returns null but none of above, it's invalid format
+    const time = parseTimeInput(trimmed);
+    if (time === null) {
+        return 'Invalid time format';
+    }
+    
+    // Check range limits based on distance
+    const limits = CSS_CONSTANTS.limits;
+    if (distance === 200) {
+        if (time < limits.time200.min) {
+            return `Time must be at least ${formatTime(limits.time200.min)}`;
+        }
+        if (time > limits.time200.max) {
+            return `Time must be less than ${formatTime(limits.time200.max)}`;
+        }
+    } else if (distance === 400) {
+        if (time < limits.time400.min) {
+            return `Time must be at least ${formatTime(limits.time400.min)}`;
+        }
+        if (time > limits.time400.max) {
+            return `Time must be less than ${formatTime(limits.time400.max)}`;
+        }
+    }
+    
+    return null; // Valid
+}
+
 // Update individual pace when input changes
 function updatePace(inputId, paceBoxId, distance) {
     const input = document.getElementById(inputId).value;
     const paceBox = document.getElementById(paceBoxId);
     const distanceNum = distance === 200 ? '200' : '400';
+    const errorEl = document.getElementById('error' + distanceNum);
     
     const secondsEl = document.getElementById('seconds' + distanceNum);
     const minSecEl = document.getElementById('minSec' + distanceNum);
     const paceEl = document.getElementById('pace' + distanceNum);
     
+    // Clear previous error
+    errorEl.classList.add('hidden');
+    errorEl.textContent = '';
+    
     if (!input) {
+        paceBox.classList.add('hidden');
+        return;
+    }
+    
+    // Check for validation errors
+    const validationError = validateTimeInput(input, distance);
+    if (validationError) {
+        errorEl.textContent = validationError;
+        errorEl.classList.remove('hidden');
         paceBox.classList.add('hidden');
         return;
     }

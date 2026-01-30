@@ -1,10 +1,18 @@
 // Core calculation functions for CSS Test Calculator
 
+// Import constants (works in both browser and Node.js)
+if (typeof require !== 'undefined') {
+    var CSS_CONSTANTS = require('./css-constants');
+}
+// CSS_CONSTANTS is loaded via script tag in browser, require in Node.js
+const LIMITS = (typeof CSS_CONSTANTS !== 'undefined') ? CSS_CONSTANTS.limits : null;
+
 // Parse flexible time input into total seconds
+// Supports: MM:SS, MM.SS, MM SS, MM:SS.s, or plain seconds
 function parseTimeInput(input) {
     const trimmed = input.trim();
     
-    // Check if it's MM:SS or MM:SS.s format
+    // Check for MM:SS format (colon separator, with optional decimal seconds)
     if (trimmed.includes(':')) {
         const parts = trimmed.split(':');
         if (parts.length === 2) {
@@ -19,7 +27,38 @@ function parseTimeInput(input) {
         return null;
     }
     
-    // Try as total seconds (including decimals)
+    // Check for MM SS format (space separator)
+    if (trimmed.includes(' ')) {
+        const parts = trimmed.split(/\s+/);
+        if (parts.length === 2) {
+            const minutes = parseInt(parts[0], 10);
+            const seconds = parseFloat(parts[1]);
+            
+            if (!isNaN(minutes) && !isNaN(seconds) && seconds >= 0 && seconds < 60 && minutes >= 0) {
+                return minutes * 60 + seconds;
+            }
+        }
+        return null;
+    }
+    
+    // Check for MM.SS format (period as separator, not decimal)
+    // Only treat as MM.SS if: format is X.YY where YY is 00-59 AND minutes is <= 12 (reasonable swim time)
+    const periodMatch = trimmed.match(/^(\d+)\.(\d{2})$/);
+    if (periodMatch) {
+        const minutes = parseInt(periodMatch[1], 10);
+        const seconds = parseInt(periodMatch[2], 10);
+        
+        // Only treat as MM.SS if minutes <= 12 and seconds < 60
+        if (minutes <= 12 && seconds >= 0 && seconds < 60) {
+            return minutes * 60 + seconds;
+        }
+        // Otherwise reject invalid MM.SS (like 1.60) or fall through to decimal seconds
+        if (minutes <= 12 && seconds >= 60) {
+            return null;
+        }
+    }
+    
+    // Try as total seconds (including decimals like 208.5 or 440.25)
     const seconds = parseFloat(trimmed);
     if (!isNaN(seconds) && seconds > 0) {
         return seconds;
@@ -53,6 +92,24 @@ function calculateCSS(time200, time400) {
     // Validate inputs
     if (time200 <= 0 || time400 <= 0) {
         throw new Error('Times must be positive values');
+    }
+    
+    // Minimum realistic times (below would be world records)
+    if (time200 < LIMITS.time200.min) {
+        throw new Error(`200m time must be at least ${LIMITS.time200.min} seconds`);
+    }
+    
+    if (time400 < LIMITS.time400.min) {
+        throw new Error(`400m time must be at least ${LIMITS.time400.min} seconds`);
+    }
+    
+    // Maximum realistic times
+    if (time200 > LIMITS.time200.max) {
+        throw new Error('200m time must be less than 6 minutes');
+    }
+    
+    if (time400 > LIMITS.time400.max) {
+        throw new Error('400m time must be less than 12 minutes');
     }
     
     if (time400 <= time200) {
